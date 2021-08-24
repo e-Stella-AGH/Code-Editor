@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import { AutocompleteWrapper } from './AutocompleteWrapper'
 import { decodeFile } from './utils'
 
-export const OptionsDrawer = ({ task, language, setLanguage, setTheme }) => {
+export const OptionsDrawer = ({ task, language, setLanguage, setTheme, theme }) => {
   const languageOptions = [
     'python',
     'javascript',
@@ -55,6 +55,7 @@ export const OptionsDrawer = ({ task, language, setLanguage, setTheme }) => {
         }}
       />
       <AutocompleteWrapper
+        defaultValue={theme}
         label='Theme'
         options={themeOptions}
         onSelect={(value) => {
