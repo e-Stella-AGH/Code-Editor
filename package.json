@@ -57,6 +57,7 @@
     "@uiw/react-monacoeditor": "^3.3.0",
     "react-circular-progressbar": "^2.0.4",
     "react-countdown-circle-timer": "^2.5.3",
-    "react-markdown": "^7.0.0"
+    "react-markdown": "^7.0.0",
+    "sweetalert2": "^11.1.4"
   }
 }

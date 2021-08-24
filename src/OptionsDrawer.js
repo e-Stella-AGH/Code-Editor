@@ -2,6 +2,7 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { AutocompleteWrapper } from './AutocompleteWrapper'
 import { decodeFile } from './utils'
+import { Typography } from '@material-ui/core'
 
 export const OptionsDrawer = ({
   task,
@@ -26,6 +27,13 @@ export const OptionsDrawer = ({
     return fileName?.indexOf('.md') !== -1
   }
 
+  const getDescription = () =>
+    checkIfMarkdown(task.descriptionFileName) ? (
+      <ReactMarkdown>{decodeFile(task.descriptionBase64)}</ReactMarkdown>
+    ) : (
+      decodeFile(task.descriptionBase64)
+    )
+
   return (
     <div
       style={{
@@ -47,10 +55,12 @@ export const OptionsDrawer = ({
           marginBottom: '3em'
         }}
       >
-        {checkIfMarkdown(task.descriptionFileName) ? (
-          <ReactMarkdown>{decodeFile(task.descriptionBase64)}</ReactMarkdown>
+        {task ? (
+          getDescription()
         ) : (
-          decodeFile(task.descriptionBase64)
+          <Typography variant='h6'>
+            In a moment, there will be a description of your task. Stay tuned!
+          </Typography>
         )}
       </div>
       <AutocompleteWrapper

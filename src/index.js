@@ -7,6 +7,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import { submit } from './utils'
 import { Timers } from './Timers'
 import { TestsResults } from './TestsResults'
+import Swal from 'sweetalert2'
 
 const getNumberOfTestsFromFile = (base64File) =>
   JSON.parse(Buffer.from(base64File, 'base64').toString('ascii')).length
@@ -18,23 +19,37 @@ export const CodeEditor = ({
   outerOnSubmit
 }) => {
   const [code, setCode] = useState('')
-  const [language, setLanguage] = useState('javascript')
+  const [language, setLanguage] = useState('python')
   const [theme, setTheme] = useState('vs-dark')
   const [open, setOpen] = useState(false)
   const [task, setTask] = useState(null)
   const [timerView, setTimerView] = useState(null)
   const [canSubmit, setCanSubmit] = useState({
+    beforeStart: true,
     ability: true,
-    lastChance: false
+    overDeadline: false
   })
   const [tests, setTests] = useState({ testResults: [], state: 'Unchecked' })
 
   useEffect(() => {
+    let overDeadline = false
     fetchFiles().then((data) => {
+      // if (Date.now() >= Date.parse(data[0].deadline)) {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Too late!',
+      //     text: "We're sorry, but time to complete this task is over!"
+      //   })
+      //   setCanSubmit({ ...canSubmit, overDeadline: true })
+      //   overDeadline = true
+      // }
+
       setTask(data[0])
       setTimerView(
         <Timers
-          timeLimit={data[0]?.timeLimit}
+          timeLimit={1}
+          canSubmit={{ ...canSubmit, overDeadline }}
+          onStart={() => setCanSubmit({ ...canSubmit, beforeStart: false })}
           onEnd={() => {
             setCanSubmit({ ...canSubmit, ability: false })
           }}
@@ -54,11 +69,6 @@ export const CodeEditor = ({
   const submitCode = (code) => {
     if (canSubmit.ability) {
       safeSubmit(code)
-    } else {
-      if (!canSubmit.lastChance) {
-        safeSubmit(code)
-        setCanSubmit({ ...canSubmit, lastChance: true })
-      }
     }
   }
 
@@ -66,11 +76,10 @@ export const CodeEditor = ({
     setTests({ ...tests, state: 'Pending' })
     submit(codeCheckerBaseLink, code, language, task.testsBase64).then(
       (data) => {
-        console.log(data)
         setTests({ testResults: data, state: 'Collected' })
       }
     )
-    if(outerOnSubmit) {
+    if (outerOnSubmit) {
       outerOnSubmit({ code, language })
     }
   }
@@ -100,7 +109,7 @@ export const CodeEditor = ({
         </IconButton>
       </div>
       <div style={{ marginTop: '2em' }}>{timerView}</div>
-      <div style={{ marginTop: '2em' }}>
+      <div style={{ marginTop: '3em' }}>
         <TestsResults testResults={tests.testResults} state={tests.state} />
       </div>
       <Drawer

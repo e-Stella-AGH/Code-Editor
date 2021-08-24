@@ -1,5 +1,6 @@
 import React from 'react'
 import { SingleTestResult } from './SingleTestResult'
+import Swal from 'sweetalert2'
 
 export const TestsResults = ({ testResults, state }) => {
   const getTestState = (testResult) => {
@@ -18,6 +19,14 @@ export const TestsResults = ({ testResults, state }) => {
         key={testResult.testCaseId}
       />
     ))
+
+  if (testResults.length > 0 && testResults[0].err) {
+    Swal.fire({
+      title: 'Compilation error!',
+      text: testResults[0].err,
+      icon: 'error'
+    })
+  }
 
   return (
     <div

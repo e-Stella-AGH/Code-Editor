@@ -34,11 +34,13 @@ const getTimeSeconds = (time) => (secondsInMinute - time) | 0
 const getTimeMinutes = (time) => ((time % secondsInHour) / secondsInMinute) | 0
 const getTimeHours = (time) => ((time % secondsInDay) / secondsInHour) | 0
 
-export const Timers = ({ timeLimit, onEnd }) => {
+export const Timers = ({ timeLimit, onStart, onEnd, canSubmit }) => {
   const [time, setTime] = useState({
     isPlaying: false,
     remainingTime: timeLimit * 60
   })
+
+  console.log(canSubmit)
 
   return (
     <div>
@@ -46,9 +48,12 @@ export const Timers = ({ timeLimit, onEnd }) => {
         <Button
           color='primary'
           variant='contained'
-          disabled={time.isPlaying}
+          disabled={time.isPlaying || canSubmit.overDeadline}
           size='large'
-          onClick={() => setTime({ ...time, isPlaying: true })}
+          onClick={() => {
+            setTime({ ...time, isPlaying: true })
+            onStart()
+          }}
         >
           Start
         </Button>

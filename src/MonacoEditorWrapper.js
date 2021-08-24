@@ -9,7 +9,8 @@ export const MonacoEditorWrapper = ({
   theme,
   setCode,
   outerDivStyle,
-  canSubmit
+  canSubmit,
+  beforeStart
 }) => {
   const editorRef = useRef(null)
 
@@ -45,9 +46,9 @@ export const MonacoEditorWrapper = ({
             setCode(editorRef.current.getValue())
           }}
           fullWidth
-          disabled={canSubmit.lastChance}
+          disabled={canSubmit.beforeStart || canSubmit.overDeadline}
         >
-          {canSubmit.ability ? 'Submit' : 'Last Chance'}
+          Submit
         </Button>
       </div>
     </div>
