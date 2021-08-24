@@ -28,7 +28,7 @@ export const CodeEditor = ({
       setTask(data[0])
       setTimerView(
         <Timers
-          timeLimit={1}
+          timeLimit={data[0]?.timeLimit}
           onEnd={() => {
             setCanSubmit({ ...canSubmit, ability: false })
           }}
