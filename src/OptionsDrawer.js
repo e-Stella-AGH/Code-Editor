@@ -3,7 +3,13 @@ import ReactMarkdown from 'react-markdown'
 import { AutocompleteWrapper } from './AutocompleteWrapper'
 import { decodeFile } from './utils'
 
-export const OptionsDrawer = ({ task, language, setLanguage, setTheme, theme }) => {
+export const OptionsDrawer = ({
+  task,
+  language,
+  setLanguage,
+  setTheme,
+  theme
+}) => {
   const languageOptions = [
     'python',
     'javascript',
@@ -37,7 +43,8 @@ export const OptionsDrawer = ({ task, language, setLanguage, setTheme, theme }) 
           backgroundColor: '#F5F5F5',
           textAlign: 'left',
           padding: '1em',
-          width: '80%'
+          width: '80%',
+          marginBottom: '3em'
         }}
       >
         {checkIfMarkdown(task.descriptionFileName) ? (

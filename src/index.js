@@ -6,11 +6,16 @@ import { OptionsDrawer } from './OptionsDrawer'
 import SettingsIcon from '@material-ui/icons/Settings'
 import { submit } from './utils'
 import { Timers } from './Timers'
+import { TestsResults } from './TestsResults'
+
+const getNumberOfTestsFromFile = (base64File) =>
+  JSON.parse(Buffer.from(base64File, 'base64').toString('ascii')).length
 
 export const CodeEditor = ({
   outerMonacoWrapperStyle,
   fetchFiles,
-  codeCheckerBaseLink
+  codeCheckerBaseLink,
+  outerOnSubmit
 }) => {
   const [code, setCode] = useState('')
   const [language, setLanguage] = useState('javascript')
@@ -22,6 +27,7 @@ export const CodeEditor = ({
     ability: true,
     lastChance: false
   })
+  const [tests, setTests] = useState({ testResults: [], state: 'Unchecked' })
 
   useEffect(() => {
     fetchFiles().then((data) => {
@@ -34,6 +40,14 @@ export const CodeEditor = ({
           }}
         />
       )
+      setTests({
+        ...tests,
+        testResults: new Array(getNumberOfTestsFromFile(data[0].testsBase64))
+          .fill(0)
+          .map((item, idx) => {
+            return { testCaseId: idx + 1 }
+          })
+      })
     })
   }, [])
 
@@ -49,9 +63,16 @@ export const CodeEditor = ({
   }
 
   const safeSubmit = (code) => {
-    submit(codeCheckerBaseLink, code, language, task.testsBase64).then((data) =>
-      console.log(data)
+    setTests({ ...tests, state: 'Pending' })
+    submit(codeCheckerBaseLink, code, language, task.testsBase64).then(
+      (data) => {
+        console.log(data)
+        setTests({ testResults: data, state: 'Collected' })
+      }
     )
+    if(outerOnSubmit) {
+      outerOnSubmit({ code, language })
+    }
   }
 
   return (
@@ -79,7 +100,9 @@ export const CodeEditor = ({
         </IconButton>
       </div>
       <div style={{ marginTop: '2em' }}>{timerView}</div>
-      <div style={{ marginTop: '2em' }}>{/* Tests */}</div>
+      <div style={{ marginTop: '2em' }}>
+        <TestsResults testResults={tests.testResults} state={tests.state} />
+      </div>
       <Drawer
         anchor='right'
         open={open}
