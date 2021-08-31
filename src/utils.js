@@ -3,7 +3,6 @@ export const decodeFile = (encoded) => {
 }
 
 export const submit = (link, code, language, tests) => {
-  // add swal
   return fetch(`${link}/with_tests`, {
     method: 'POST',
     headers: {

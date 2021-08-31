@@ -10,7 +10,7 @@ export const MonacoEditorWrapper = ({
   setCode,
   outerDivStyle,
   canSubmit,
-  beforeStart
+  absoluteOffset
 }) => {
   const editorRef = useRef(null)
 
@@ -35,8 +35,8 @@ export const MonacoEditorWrapper = ({
       <div
         style={{
           position: 'absolute',
-          left: '1em',
-          top: '1em'
+          left: `${1 + absoluteOffset.submit.left}em`,
+          top: `${1 + absoluteOffset.submit.top}em`
         }}
       >
         <Button

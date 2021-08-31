@@ -40,8 +40,6 @@ export const Timers = ({ timeLimit, onStart, onEnd, canSubmit }) => {
     remainingTime: timeLimit * 60
   })
 
-  console.log(canSubmit)
-
   return (
     <div>
       <div style={{ textAlign: 'center', marginBottom: '1em' }}>

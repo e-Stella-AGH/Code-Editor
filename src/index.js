@@ -16,7 +16,8 @@ export const CodeEditor = ({
   outerMonacoWrapperStyle,
   fetchFiles,
   codeCheckerBaseLink,
-  outerOnSubmit
+  outerOnSubmit,
+  absoluteOffset
 }) => {
   const [code, setCode] = useState('')
   const [language, setLanguage] = useState('python')
@@ -34,20 +35,20 @@ export const CodeEditor = ({
   useEffect(() => {
     let overDeadline = false
     fetchFiles().then((data) => {
-      // if (Date.now() >= Date.parse(data[0].deadline)) {
-      //   Swal.fire({
-      //     icon: 'error',
-      //     title: 'Too late!',
-      //     text: "We're sorry, but time to complete this task is over!"
-      //   })
-      //   setCanSubmit({ ...canSubmit, overDeadline: true })
-      //   overDeadline = true
-      // }
+      if (Date.now() >= Date.parse(data[0].deadline)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Too late!',
+          text: "We're sorry, but time to complete this task is over!"
+        })
+        setCanSubmit({ ...canSubmit, overDeadline: true })
+        overDeadline = true
+      }
 
       setTask(data[0])
       setTimerView(
         <Timers
-          timeLimit={1}
+          timeLimit={data[0].timeLimit}
           canSubmit={{ ...canSubmit, overDeadline }}
           onStart={() => setCanSubmit({ ...canSubmit, beforeStart: false })}
           onEnd={() => {
@@ -80,7 +81,7 @@ export const CodeEditor = ({
       }
     )
     if (outerOnSubmit) {
-      outerOnSubmit({ code, language })
+      outerOnSubmit({ code, language, task })
     }
   }
 
@@ -96,12 +97,13 @@ export const CodeEditor = ({
         outerDivStyle={outerMonacoWrapperStyle || { height: '300px' }}
         theme={theme}
         canSubmit={canSubmit}
+        absoluteOffset={absoluteOffset}
       />
       <div
         style={{
           position: 'absolute',
-          right: '1em',
-          top: '1em'
+          right: `${1 + absoluteOffset.settings.right}em`,
+          top: `${1 + absoluteOffset.settings.top}em`
         }}
       >
         <IconButton onClick={() => setOpen(true)}>
@@ -130,6 +132,29 @@ export const CodeEditor = ({
   )
 }
 
-MonacoEditorWrapper.propTypes = {
-  outerMonacoWrapperStyle: PropTypes.object
+CodeEditor.propTypes = {
+  outerMonacoWrapperStyle: PropTypes.object,
+  absoluteOffset: PropTypes.exact({
+    settings: PropTypes.exact({
+      right: PropTypes.number,
+      top: PropTypes.number
+    }),
+    submit: PropTypes.exact({
+      left: PropTypes.number,
+      top: PropTypes.number
+    })
+  })
+}
+
+CodeEditor.defaultProps = {
+  absoluteOffset: {
+    settings: {
+      right: 0,
+      top: 0
+    },
+    submit: {
+      left: 0,
+      top: 0
+    }
+  }
 }
