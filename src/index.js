@@ -14,11 +14,14 @@ const getNumberOfTestsFromFile = (base64File) =>
 
 export const CodeEditor = ({
   outerMonacoWrapperStyle,
-  fetchFiles,
+  fetchTasks,
   codeCheckerBaseLink,
   outerOnSubmit,
   absoluteOffset
 }) => {
+
+  if(!codeCheckerBaseLink) codeCheckerBaseLink = "https://e-stella-code-executor.herokuapp.com"
+
   const [code, setCode] = useState('')
   const [language, setLanguage] = useState('python')
   const [theme, setTheme] = useState('vs-dark')
@@ -34,7 +37,7 @@ export const CodeEditor = ({
 
   useEffect(() => {
     let overDeadline = false
-    fetchFiles().then((data) => {
+    fetchTasks().then((data) => {
       if (Date.now() >= Date.parse(data[0].deadline)) {
         Swal.fire({
           icon: 'error',
@@ -143,7 +146,10 @@ CodeEditor.propTypes = {
       left: PropTypes.number,
       top: PropTypes.number
     })
-  })
+  }),
+  fetchTasks: PropTypes.func.isRequired,
+  codeCheckerBaseLink: PropTypes.string.isRequired,
+  outerOnSubmit: PropTypes.func
 }
 
 CodeEditor.defaultProps = {

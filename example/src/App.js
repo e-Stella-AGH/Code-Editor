@@ -6,7 +6,7 @@ const App = () => {
   return (
     <div style={{overflowX: 'hidden', overflowY: 'hidden'}}>
       <CodeEditor
-        fetchFiles={
+        fetchTasks={
           () => fetch("https://recruitment-service-estella.herokuapp.com/api/tasks?process=16").then(response => response.json())
         }
         codeCheckerBaseLink="https://e-stella-code-executor.herokuapp.com"
