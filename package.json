@@ -52,7 +52,12 @@
   ],
   "dependencies": {
     "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
-    "@uiw/react-monacoeditor": "^3.3.0"
+    "@uiw/react-monacoeditor": "^3.3.0",
+    "react-circular-progressbar": "^2.0.4",
+    "react-countdown-circle-timer": "^2.5.3",
+    "react-markdown": "^7.0.0",
+    "sweetalert2": "^11.1.4"
   }
 }
