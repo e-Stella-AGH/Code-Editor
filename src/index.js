@@ -81,11 +81,11 @@ export const CodeEditor = ({
     submit(codeCheckerBaseLink, code, language, task.testsBase64).then(
       (data) => {
         setTests({ testResults: data, state: 'Collected' })
+        if (outerOnSubmit) {
+          outerOnSubmit({ code, language, task, testResults: data })
+        }
       }
     )
-    if (outerOnSubmit) {
-      outerOnSubmit({ code, language, task })
-    }
   }
 
   return (
