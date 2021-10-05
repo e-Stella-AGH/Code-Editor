@@ -24,7 +24,7 @@ const App = () => {
   const channel = ably.channels.get('code')
 
   const sub = (func) => channel.subscribe(func)
-  const pub = (data) => channel.publish('codeChanged', data, (err) => err ? console.log(err) : console.log('ok'))
+  const pub = (data) => channel.publish('codeChanged', data, (err) => err ? console.log(err) : console.log(''))
 
   return (
     <div style={{overflowX: 'hidden', overflowY: 'hidden'}}>

@@ -29,7 +29,6 @@ export const MonacoEditorWrapper = ({
 
     let interval = setInterval(() => {
 
-      console.log(canPublish)
       if(canPublish) {
         shareCodeUtils?.pub(JSON.stringify({ id: shareCodeUtils?.id, message: editorRef?.current?.getValue() }))
       }
@@ -56,7 +55,7 @@ export const MonacoEditorWrapper = ({
           top: `${1 + absoluteOffset.submit.top}em`,
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'row'}}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '1em'}}>
           <Button
             variant='contained'
             color='primary'
@@ -64,7 +63,7 @@ export const MonacoEditorWrapper = ({
               setCode(editorRef.current.getValue())
             }}
             fullWidth
-            disabled={canSubmit.beforeStart || canSubmit.overDeadline}
+            disabled={canSubmit.beforeStart}
           >
             Submit
           </Button>
@@ -73,7 +72,7 @@ export const MonacoEditorWrapper = ({
             color='primary'
             onClick={takeControl}
             style={{width: '20em'}}
-            disabled={canSubmit.beforeStart || canSubmit.overDeadline}
+            disabled={canSubmit.beforeStart || canPublish}
           >
             Take Control
           </Button>
