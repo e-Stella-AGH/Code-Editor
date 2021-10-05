@@ -38,15 +38,6 @@ export const CodeEditor = ({
   useEffect(() => {
     let overDeadline = false
     fetchTasks().then((data) => {
-      if (Date.now() >= Date.parse(data[0].deadline)) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Too late!',
-          text: "We're sorry, but time to complete this task is over!"
-        })
-        setCanSubmit({ ...canSubmit, overDeadline: true })
-        overDeadline = true
-      }
 
       setTask(data[0])
       setTimerView(
@@ -97,7 +88,7 @@ export const CodeEditor = ({
         }}
         language={language}
         code={code}
-        outerDivStyle={outerMonacoWrapperStyle || { height: '300px' }}
+        outerDivStyle={outerMonacoWrapperStyle || { height: '200px' }}
         theme={theme}
         canSubmit={canSubmit}
         absoluteOffset={absoluteOffset}
@@ -114,7 +105,7 @@ export const CodeEditor = ({
         </IconButton>
       </div>
       <div style={{ marginTop: '2em' }}>{timerView}</div>
-      <div style={{ marginTop: '3em' }}>
+      <div style={{ marginTop: '2em', marginBottom: '1em' }}>
         <TestsResults testResults={tests.testResults} state={tests.state} />
       </div>
       <Drawer
