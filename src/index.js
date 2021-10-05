@@ -36,6 +36,13 @@ export const CodeEditor = ({
   })
   const [tests, setTests] = useState({ testResults: [], state: 'Unchecked' })
 
+  const [canPublish, setCanPublish] = useState(false)
+
+  const takeControl = () => {
+    sharingCodeFunctions?.pub(JSON.stringify({ id: sharingCodeFunctions?.id, message: "takeControl" }))
+    setCanPublish(true)
+  }
+
   useEffect(() => {
     let overDeadline = false
     fetchTasks().then((data) => {
@@ -59,16 +66,22 @@ export const CodeEditor = ({
             return { testCaseId: idx + 1 }
           })
       })
-
-      sharingCodeFunctions?.sub?.(message => {
-        const parsed = JSON.parse(message)
-        const id = parsed.data.id
-        const code = parsed.data.code
-        if (id !== sharingCodeFunctions?.id) {
-          setCode(code)
-        }
-      })
     })
+
+    sharingCodeFunctions?.sub?.(message => {
+      const parsed = JSON.parse(message.data)
+      const id = parsed.id
+      const mes = parsed.message
+  
+      if (mes === "takeControl") {
+        setCanPublish(id === sharingCodeFunctions?.id)
+      } else if (id !== sharingCodeFunctions?.id) {
+        setCode(mes)
+      }
+  
+    })
+  
+
   }, [])
 
   const submitCode = (code) => {
@@ -102,6 +115,9 @@ export const CodeEditor = ({
         theme={theme}
         canSubmit={canSubmit}
         absoluteOffset={absoluteOffset}
+        shareCodeUtils={sharingCodeFunctions}
+        takeControl={takeControl}
+        canPublish={canPublish}
       />
       <div
         style={{

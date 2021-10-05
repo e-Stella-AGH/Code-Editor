@@ -11,7 +11,9 @@ export const MonacoEditorWrapper = ({
   outerDivStyle,
   canSubmit,
   absoluteOffset,
-  shareCodeUtils
+  shareCodeUtils,
+  takeControl,
+  canPublish
 }) => {
   const editorRef = useRef(null)
 
@@ -23,18 +25,19 @@ export const MonacoEditorWrapper = ({
     editorRef.current = editor
   }
 
-  console.log("code:", code)
-
   useEffect(() => {
 
     let interval = setInterval(() => {
-      
-      shareCodeUtils?.pub(JSON.stringify({ id: shareCodeUtils?.id, code: editorRef?.current?.getValue() }))
+
+      console.log(canPublish)
+      if(canPublish) {
+        shareCodeUtils?.pub(JSON.stringify({ id: shareCodeUtils?.id, message: editorRef?.current?.getValue() }))
+      }
       
     }, shareCodeUtils?.codeSharingInterval || 2000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [canPublish])
 
   return (
     <div style={{ ...outerDivStyle, padding: '4em', ...colorStyle }}>
@@ -50,20 +53,31 @@ export const MonacoEditorWrapper = ({
         style={{
           position: 'absolute',
           left: `${1 + absoluteOffset.submit.left}em`,
-          top: `${1 + absoluteOffset.submit.top}em`
+          top: `${1 + absoluteOffset.submit.top}em`,
         }}
       >
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => {
-            setCode(editorRef.current.getValue())
-          }}
-          fullWidth
-          disabled={canSubmit.beforeStart || canSubmit.overDeadline}
-        >
-          Submit
-        </Button>
+        <div style={{ display: 'flex', flexDirection: 'row'}}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => {
+              setCode(editorRef.current.getValue())
+            }}
+            fullWidth
+            disabled={canSubmit.beforeStart || canSubmit.overDeadline}
+          >
+            Submit
+          </Button>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={takeControl}
+            style={{width: '20em'}}
+            disabled={canSubmit.beforeStart || canSubmit.overDeadline}
+          >
+            Take Control
+          </Button>
+        </div>
       </div>
     </div>
   )
