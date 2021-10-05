@@ -1,13 +1,15 @@
 {
+  "homepage": "https://e-stella-agh.github.io/Code-Editor",
   "name": "e-stella-code-editor-example",
-  "homepage": ".",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
     "build": "node ../node_modules/react-scripts/bin/react-scripts.js build",
     "test": "node ../node_modules/react-scripts/bin/react-scripts.js test",
-    "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
+    "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "ably": "^1.2.14",

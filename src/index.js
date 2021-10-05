@@ -62,8 +62,8 @@ export const CodeEditor = ({
 
       sharingCodeFunctions?.sub?.(message => {
         const parsed = JSON.parse(message)
-        const id = parsed.message.id
-        const code = parsed.message.code
+        const id = parsed.data.id
+        const code = parsed.data.code
         if (id !== sharingCodeFunctions?.id) {
           setCode(code)
         }
