@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import MonacoEditor from '@uiw/react-monacoeditor'
 import PropTypes from 'prop-types'
 import { Button } from '@material-ui/core'
@@ -10,7 +10,8 @@ export const MonacoEditorWrapper = ({
   setCode,
   outerDivStyle,
   canSubmit,
-  absoluteOffset
+  absoluteOffset,
+  shareCodeUtils
 }) => {
   const editorRef = useRef(null)
 
@@ -21,6 +22,19 @@ export const MonacoEditorWrapper = ({
   const editorDidMount = (editor, monaco) => {
     editorRef.current = editor
   }
+
+  console.log("code:", code)
+
+  useEffect(() => {
+
+    let interval = setInterval(() => {
+      
+      shareCodeUtils?.pub(JSON.stringify({ id: shareCodeUtils?.id, code: editorRef?.current?.getValue() }))
+      
+    }, shareCodeUtils?.codeSharingInterval || 2000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div style={{ ...outerDivStyle, padding: '4em', ...colorStyle }}>

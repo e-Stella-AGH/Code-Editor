@@ -17,7 +17,8 @@ export const CodeEditor = ({
   fetchTasks,
   codeCheckerBaseLink,
   outerOnSubmit,
-  absoluteOffset
+  absoluteOffset,
+  sharingCodeFunctions
 }) => {
 
   if(!codeCheckerBaseLink) codeCheckerBaseLink = "https://e-stella-code-executor.herokuapp.com"
@@ -57,6 +58,15 @@ export const CodeEditor = ({
           .map((item, idx) => {
             return { testCaseId: idx + 1 }
           })
+      })
+
+      sharingCodeFunctions?.sub?.(message => {
+        const parsed = JSON.parse(message)
+        const id = parsed.message.id
+        const code = parsed.message.code
+        if (id !== sharingCodeFunctions?.id) {
+          setCode(code)
+        }
       })
     })
   }, [])
