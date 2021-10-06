@@ -1,6 +1,6 @@
 {
   "name": "e-stella-code-editor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Code Editor component for E-Stella project (and not only)",
   "author": "e-Stella-AGH",
   "license": "MIT",
@@ -55,6 +55,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@uiw/react-monacoeditor": "^3.3.0",
+    "ably": "^1.2.14",
     "react-circular-progressbar": "^2.0.4",
     "react-countdown-circle-timer": "^2.5.3",
     "react-markdown": "^7.0.0",

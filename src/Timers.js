@@ -34,7 +34,7 @@ const getTimeSeconds = (time) => (secondsInMinute - time) | 0
 const getTimeMinutes = (time) => ((time % secondsInHour) / secondsInMinute) | 0
 const getTimeHours = (time) => ((time % secondsInDay) / secondsInHour) | 0
 
-export const Timers = ({ timeLimit, onStart, onEnd, canSubmit }) => {
+export const Timers = ({ timeLimit, onStart, onEnd, canSubmit, startButtonRef }) => {
   const [time, setTime] = useState({
     isPlaying: false,
     remainingTime: timeLimit * 60
@@ -52,6 +52,7 @@ export const Timers = ({ timeLimit, onStart, onEnd, canSubmit }) => {
             setTime({ ...time, isPlaying: true })
             onStart()
           }}
+          ref={startButtonRef}
         >
           Start
         </Button>

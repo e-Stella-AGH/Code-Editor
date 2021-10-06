@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import MonacoEditor from '@uiw/react-monacoeditor'
 import PropTypes from 'prop-types'
 import { Button } from '@material-ui/core'
@@ -10,7 +10,10 @@ export const MonacoEditorWrapper = ({
   setCode,
   outerDivStyle,
   canSubmit,
-  absoluteOffset
+  absoluteOffset,
+  shareCodeUtils,
+  takeControl,
+  canPublish
 }) => {
   const editorRef = useRef(null)
 
@@ -21,6 +24,19 @@ export const MonacoEditorWrapper = ({
   const editorDidMount = (editor, monaco) => {
     editorRef.current = editor
   }
+
+  useEffect(() => {
+
+    let interval = setInterval(() => {
+
+      if(canPublish) {
+        shareCodeUtils?.pub(JSON.stringify({ id: shareCodeUtils?.id, message: editorRef?.current?.getValue() }))
+      }
+      
+    }, shareCodeUtils?.codeSharingInterval || 2000)
+
+    return () => clearInterval(interval)
+  }, [canPublish])
 
   return (
     <div style={{ ...outerDivStyle, padding: '4em', ...colorStyle }}>
@@ -36,20 +52,31 @@ export const MonacoEditorWrapper = ({
         style={{
           position: 'absolute',
           left: `${1 + absoluteOffset.submit.left}em`,
-          top: `${1 + absoluteOffset.submit.top}em`
+          top: `${1 + absoluteOffset.submit.top}em`,
         }}
       >
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => {
-            setCode(editorRef.current.getValue())
-          }}
-          fullWidth
-          disabled={canSubmit.beforeStart || canSubmit.overDeadline}
-        >
-          Submit
-        </Button>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '1em'}}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => {
+              setCode(editorRef.current.getValue())
+            }}
+            fullWidth
+            disabled={canSubmit.beforeStart}
+          >
+            Submit
+          </Button>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={takeControl}
+            style={{width: '20em'}}
+            disabled={canSubmit.beforeStart || canPublish}
+          >
+            Take Control
+          </Button>
+        </div>
       </div>
     </div>
   )

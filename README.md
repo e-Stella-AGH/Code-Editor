@@ -16,16 +16,27 @@ npm install --save e-stella-code-editor
 import React from 'react'
 
 import { CodeEditor } from 'e-stella-code-editor'
+import { Realtime } from "ably/browser/static/ably-commonjs.js"
+
 
 const App = () => {
+
+  const id = Math.floor(Math.random() * 100)
+
+  const ably = new Realtime({ key: process.env.REACT_APP_ABLY_API_KEY })
+  const channel = ably.channels.get('code')
+
+  const sub = (func) => channel.subscribe(func)
+  const pub = (data) => channel.publish('codeChanged', data, (err) => err ? console.log(err) : console.log(''))
+
   return (
     <div style={{overflowX: 'hidden', overflowY: 'hidden'}}>
       <CodeEditor
-        fetchFiles={
+        fetchTasks={
           () => fetch("https://recruitment-service-estella.herokuapp.com/api/tasks?process=16").then(response => response.json())
         }
         codeCheckerBaseLink="https://e-stella-code-executor.herokuapp.com"
-        absoluteOffset={{settings: {top: 1, right: 1}, submit: { top: 2, right: 3 }}}
+        sharingCodeFunctions={{ sub, pub, id }}
       />
     </div>
   )
@@ -49,6 +60,7 @@ outerMonacoWrapperStyle,
 | `codeCheckerBaseLink`  | string  | "https://e-stella-code-executor.herokuapp.com"  | false  | Link to REST Api that should execute tests. See below to see what endpoints it must have  |
 | `outerOnSubmit`  | function  | None  | false  | Function that will be called when Submit button is clicked (aside of checking tests). It will be called with object `{ code, language, task }`  |
 | `absoluteOffset`  | object  | None  | false  | Offset of absolute position of settings and submit buttons. Check example to see how it must be shaped.  |
+| `sharingCodeFunctions`  | object  | None  | false  | Functions and utils we'll use to share your code in realtime. If you don't want to use them, leave this prop empty. |
 
 
 ### Fetch Tasks
@@ -56,6 +68,15 @@ TODO
 
 ### CodeCheckerBaseLink
 TODO
+
+### sharingCodeFunctions
+Utils that we need to share your code in real time. As we don't want to set technology in stone, we didn't provide them by default. Check out
+out example to see how we implemented them with Ably.
+Utils we need:
+* `pub` - publish function
+* `sub` - subscribe function - should receive one argument - callback that will be called when message comes. We'll use it to set a code message.
+* `id` - unique identifier that we'll use to determine who sent the code
+* `codeSharingInterval` - interval of sharing code in ms (if not set, will fallback to default 2000)
 
 
 ## License

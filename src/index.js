@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { IconButton, Drawer } from '@material-ui/core'
 import { MonacoEditorWrapper } from './MonacoEditorWrapper'
 import PropTypes from 'prop-types'
@@ -17,7 +17,8 @@ export const CodeEditor = ({
   fetchTasks,
   codeCheckerBaseLink,
   outerOnSubmit,
-  absoluteOffset
+  absoluteOffset,
+  sharingCodeFunctions
 }) => {
 
   if(!codeCheckerBaseLink) codeCheckerBaseLink = "https://e-stella-code-executor.herokuapp.com"
@@ -35,6 +36,20 @@ export const CodeEditor = ({
   })
   const [tests, setTests] = useState({ testResults: [], state: 'Unchecked' })
 
+  const [canPublish, setCanPublish] = useState(false)
+
+  const takeControl = () => {
+    sharingCodeFunctions?.pub(JSON.stringify({ id: sharingCodeFunctions?.id, message: "takeControl" }))
+    setCanPublish(true)
+  }
+
+  const onTimerStart = () => {
+    sharingCodeFunctions?.pub(JSON.stringify({ id: sharingCodeFunctions?.id, message: "start" }))
+    setCanSubmit({ ...canSubmit, beforeStart: false }) 
+  }
+
+  const startButtonRef = useRef(null)
+
   useEffect(() => {
     let overDeadline = false
     fetchTasks().then((data) => {
@@ -44,10 +59,11 @@ export const CodeEditor = ({
         <Timers
           timeLimit={data[0].timeLimit}
           canSubmit={{ ...canSubmit, overDeadline }}
-          onStart={() => setCanSubmit({ ...canSubmit, beforeStart: false })}
+          onStart={onTimerStart}
           onEnd={() => {
             setCanSubmit({ ...canSubmit, ability: false })
           }}
+          startButtonRef={startButtonRef}
         />
       )
       setTests({
@@ -59,6 +75,23 @@ export const CodeEditor = ({
           })
       })
     })
+
+    sharingCodeFunctions?.sub?.(message => {
+      const parsed = JSON.parse(message.data)
+      const id = parsed.id
+      const mes = parsed.message
+  
+      if (mes === "takeControl") {
+        setCanPublish(id === sharingCodeFunctions?.id)
+      } else if (mes === "start") {
+        startButtonRef?.current?.click()
+      } else if (id !== sharingCodeFunctions?.id) {
+        setCode(mes)
+      }
+  
+    })
+  
+
   }, [])
 
   const submitCode = (code) => {
@@ -92,6 +125,9 @@ export const CodeEditor = ({
         theme={theme}
         canSubmit={canSubmit}
         absoluteOffset={absoluteOffset}
+        shareCodeUtils={sharingCodeFunctions}
+        takeControl={takeControl}
+        canPublish={canPublish}
       />
       <div
         style={{
