@@ -20,7 +20,7 @@ const App = () => {
 
   const id = makeid(10)
 
-  const ably = new Realtime({ key: 'vVogsQ.TIFtUw:VOMpWmEg9kv7tR7K' })
+  const ably = new Realtime({ key: process.env.REACT_APP_ABLY_API_KEY })
   const channel = ably.channels.get('code')
 
   const sub = (func) => channel.subscribe(func)
