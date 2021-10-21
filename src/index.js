@@ -102,14 +102,19 @@ export const CodeEditor = ({
 
   const safeSubmit = (code) => {
     setTests({ ...tests, state: 'Pending' })
-    submit(codeCheckerBaseLink, code, language, task.testsBase64).then(
-      (data) => {
-        setTests({ testResults: data, state: 'Collected' })
-        if (outerOnSubmit) {
-          outerOnSubmit({ code, language, task, testResults: data })
-        }
+    submit(
+      codeCheckerBaseLink,
+      code,
+      language,
+      task.testsBase64,
+      solverId,
+      task.id
+    ).then((data) => {
+      setTests({ testResults: data, state: 'Collected' })
+      if (outerOnSubmit) {
+        outerOnSubmit({ code, language, task, testResults: data })
       }
-    )
+    })
   }
 
   return (
