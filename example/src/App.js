@@ -9,7 +9,7 @@ function makeid(length) {
   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var charactersLength = characters.length;
   for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * 
+    result += characters.charAt(Math.floor(Math.random() *
 charactersLength));
  }
  return result;
@@ -32,7 +32,8 @@ const App = () => {
         fetchTasks={
           () => fetch("https://recruitment-service-estella.herokuapp.com/api/tasks?process=16").then(response => response.json())
         }
-        codeCheckerBaseLink="https://e-stella-code-executor.herokuapp.com"
+        solverId="f0dee915-9291-449f-9b37-33ef547adeb0"
+        codeCheckerBaseLink="http://localhost:3000"
         sharingCodeFunctions={{ sub, pub, id }}
       />
     </div>

@@ -35,6 +35,7 @@ const App = () => {
         fetchTasks={
           () => fetch("https://recruitment-service-estella.herokuapp.com/api/tasks?process=16").then(response => response.json())
         }
+        solverId="f0dee915-9291-449f-9b37-33ef547adeb0"
         codeCheckerBaseLink="https://e-stella-code-executor.herokuapp.com"
         sharingCodeFunctions={{ sub, pub, id }}
       />
@@ -57,6 +58,7 @@ outerMonacoWrapperStyle,
 |---|---|---|---|---|
 | `outerMonacoWrapperStyle`  | object  | `{height: '300px'}`  | false  | Style of monaco editor (big black rectangle in which you write code)  |
 | `fetchTasks`  | function  | None  | true  | Function that gets tasks. See below to see what task object should return  |
+| `solverId`  | string  | None  | true  | Task solver identification string  |
 | `codeCheckerBaseLink`  | string  | "https://e-stella-code-executor.herokuapp.com"  | false  | Link to REST Api that should execute tests. See below to see what endpoints it must have  |
 | `outerOnSubmit`  | function  | None  | false  | Function that will be called when Submit button is clicked (aside of checking tests). It will be called with object `{ code, language, task }`  |
 | `absoluteOffset`  | object  | None  | false  | Offset of absolute position of settings and submit buttons. Check example to see how it must be shaped.  |
