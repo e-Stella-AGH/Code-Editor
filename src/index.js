@@ -16,12 +16,13 @@ export const CodeEditor = ({
   outerMonacoWrapperStyle,
   fetchTasks,
   codeCheckerBaseLink,
+  solverId,
   outerOnSubmit,
   absoluteOffset,
   sharingCodeFunctions
 }) => {
-
-  if(!codeCheckerBaseLink) codeCheckerBaseLink = "https://e-stella-code-executor.herokuapp.com"
+  if (!codeCheckerBaseLink)
+    codeCheckerBaseLink = 'https://e-stella-code-executor.herokuapp.com'
 
   const [code, setCode] = useState('')
   const [language, setLanguage] = useState('python')
@@ -39,21 +40,24 @@ export const CodeEditor = ({
   const [canPublish, setCanPublish] = useState(false)
 
   const takeControl = () => {
-    sharingCodeFunctions?.pub(JSON.stringify({ id: sharingCodeFunctions?.id, message: "takeControl" }))
+    sharingCodeFunctions?.pub(
+      JSON.stringify({ id: sharingCodeFunctions?.id, message: 'takeControl' })
+    )
     setCanPublish(true)
   }
 
   const onTimerStart = () => {
-    sharingCodeFunctions?.pub(JSON.stringify({ id: sharingCodeFunctions?.id, message: "start" }))
-    setCanSubmit({ ...canSubmit, beforeStart: false }) 
+    sharingCodeFunctions?.pub(
+      JSON.stringify({ id: sharingCodeFunctions?.id, message: 'start' })
+    )
+    setCanSubmit({ ...canSubmit, beforeStart: false })
   }
 
   const startButtonRef = useRef(null)
 
   useEffect(() => {
-    let overDeadline = false
+    const overDeadline = false
     fetchTasks().then((data) => {
-
       setTask(data[0])
       setTimerView(
         <Timers
@@ -76,22 +80,19 @@ export const CodeEditor = ({
       })
     })
 
-    sharingCodeFunctions?.sub?.(message => {
+    sharingCodeFunctions?.sub?.((message) => {
       const parsed = JSON.parse(message.data)
       const id = parsed.id
       const mes = parsed.message
-  
-      if (mes === "takeControl") {
+
+      if (mes === 'takeControl') {
         setCanPublish(id === sharingCodeFunctions?.id)
-      } else if (mes === "start") {
+      } else if (mes === 'start') {
         startButtonRef?.current?.click()
       } else if (id !== sharingCodeFunctions?.id) {
         setCode(mes)
       }
-  
     })
-  
-
   }, [])
 
   const submitCode = (code) => {
@@ -102,14 +103,19 @@ export const CodeEditor = ({
 
   const safeSubmit = (code) => {
     setTests({ ...tests, state: 'Pending' })
-    submit(codeCheckerBaseLink, code, language, task.testsBase64).then(
-      (data) => {
-        setTests({ testResults: data, state: 'Collected' })
-        if (outerOnSubmit) {
-          outerOnSubmit({ code, language, task, testResults: data })
-        }
+    submit(
+      codeCheckerBaseLink,
+      code,
+      language,
+      task.testsBase64,
+      solverId,
+      task.id
+    ).then((data) => {
+      setTests({ testResults: data.results, state: 'Collected' })
+      if (outerOnSubmit) {
+        outerOnSubmit({ code, language, task, testResults: data })
       }
-    )
+    })
   }
 
   return (
