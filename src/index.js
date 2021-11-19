@@ -36,6 +36,7 @@ export const CodeEditor = ({
     overDeadline: false
   })
   const [tests, setTests] = useState({ testResults: [], state: 'Unchecked' })
+  const [areTestsDisplayedFirstTime, setAreTestsDisplayedFirstTime] = useState(true)
 
   const [canPublish, setCanPublish] = useState(false)
 
@@ -44,6 +45,7 @@ export const CodeEditor = ({
       JSON.stringify({ id: sharingCodeFunctions?.id, message: 'takeControl' })
     )
     setCanPublish(true)
+    setAreTestsDisplayedFirstTime(false)
   }
 
   const onTimerStart = () => {
@@ -102,6 +104,7 @@ export const CodeEditor = ({
   }
 
   const safeSubmit = (code) => {
+    console.log(code)
     setTests({ ...tests, state: 'Pending' })
     submit(
       codeCheckerBaseLink,
@@ -112,6 +115,7 @@ export const CodeEditor = ({
       task.id
     ).then((data) => {
       setTests({ testResults: data.results, state: 'Collected' })
+      setAreTestsDisplayedFirstTime(true)
       if (outerOnSubmit) {
         outerOnSubmit({ code, language, task, testResults: data })
       }
@@ -148,7 +152,7 @@ export const CodeEditor = ({
       </div>
       <div style={{ marginTop: '2em' }}>{timerView}</div>
       <div style={{ marginTop: '2em', marginBottom: '1em' }}>
-        <TestsResults testResults={tests.testResults} state={tests.state} />
+        <TestsResults testResults={tests.testResults} state={tests.state} shouldShowCompilationError={areTestsDisplayedFirstTime} setShouldShowCompilationError={setAreTestsDisplayedFirstTime} />
       </div>
       <Drawer
         anchor='right'

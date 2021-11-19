@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import MonacoEditor from '@uiw/react-monacoeditor'
 import PropTypes from 'prop-types'
 import { Button } from '@material-ui/core'
@@ -15,8 +15,13 @@ export const MonacoEditorWrapper = ({
   takeControl,
   canPublish
 }) => {
+  
+  const getOptions = () => canPublish ? {readOnly: false} : {readOnly: true}
+
   const editorRef = useRef(null)
 
+  const [options, setOptions] = useState(getOptions(canPublish))
+  
   const color =
     theme === 'vs' ? '#ffffff' : theme === 'vs-dark' ? '#1e1e1e' : '#000000'
   const colorStyle = { backgroundColor: color }
@@ -24,6 +29,10 @@ export const MonacoEditorWrapper = ({
   const editorDidMount = (editor, monaco) => {
     editorRef.current = editor
   }
+
+  useEffect(() => {
+    setOptions(getOptions(canPublish))
+  }, [canPublish])
 
   useEffect(() => {
 
@@ -44,7 +53,8 @@ export const MonacoEditorWrapper = ({
         language={language}
         value={code}
         options={{
-          theme: theme
+          theme: theme,
+          ...options
         }}
         editorDidMount={editorDidMount}
       />

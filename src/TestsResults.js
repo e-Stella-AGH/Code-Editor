@@ -2,7 +2,8 @@ import React from 'react'
 import { SingleTestResult } from './SingleTestResult'
 import Swal from 'sweetalert2'
 
-export const TestsResults = ({ testResults, state }) => {
+export const TestsResults = ({ testResults, state, shouldShowCompilationError, setShouldShowCompilationError }) => {
+
   const getTestState = (testResult) => {
     if (state === 'Unchecked' || state === 'Pending') {
       return state
@@ -20,12 +21,13 @@ export const TestsResults = ({ testResults, state }) => {
       />
     ))
 
-  if (testResults.length > 0 && testResults[0].err) {
+  if (testResults.length > 0 && testResults[0].err && shouldShowCompilationError) {
     Swal.fire({
       title: 'Compilation error!',
       text: testResults[0].err,
-      icon: 'error'
-    })
+      icon: 'error',
+      allowOutsideClick: false
+    }).then(() => setShouldShowCompilationError(false))
   }
 
   return (
