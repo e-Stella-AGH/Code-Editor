@@ -13,12 +13,10 @@ const getNumberOfTestsFromFile = (base64File) =>
   JSON.parse(Buffer.from(base64File, 'base64').toString('ascii')).length
 
 function getTimeLimit(data) {
-  return data.startTime ? new Date(data.startTime).getTime() + data.timeLimit * 60 * 1000 - new Date() : data.timeLimit * 60;
+  return data.startTime ? new Date(data.startTime).getTime() + data.timeLimit * 60 * 1000 - new Date() : data.timeLimit * 60 * 1000;
 }
 
-function isTaskStarted(data) {
-  return data.startTime != null
-}
+const isTaskStarted = (data) => !!data.startTime
 
 export const CodeEditor = ({
   outerMonacoWrapperStyle,
@@ -61,7 +59,7 @@ export const CodeEditor = ({
     sharingCodeFunctions?.pub(
       JSON.stringify({ id: sharingCodeFunctions?.id, message: 'start' })
     )
-    if (taskStartedCallback && !task.startTime) taskStartedCallback()
+    if (taskStartedCallback && !isTaskStarted(task)) taskStartedCallback()
 
     setCanSubmit({ ...canSubmit, beforeStart: false })
   }
