@@ -34,9 +34,9 @@ const getTimeSeconds = (time) => (secondsInMinute - time) | 0
 const getTimeMinutes = (time) => ((time % secondsInHour) / secondsInMinute) | 0
 const getTimeHours = (time) => ((time % secondsInDay) / secondsInHour) | 0
 
-export const Timers = ({ timeLimit, running, onStart, onEnd, canSubmit, startButtonRef }) => {
+export const Timers = ({ timeLimit, isRunning, onStart, onEnd, canSubmit, startButtonRef }) => {
   const [time, setTime] = useState({
-    isPlaying: running,
+    isPlaying: isRunning,
     remainingTime: timeLimit / 1000
   })
 

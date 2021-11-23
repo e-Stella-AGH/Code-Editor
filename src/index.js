@@ -78,7 +78,7 @@ export const CodeEditor = ({
       setTimerView(
         <Timers
           timeLimit={getTimeLimit(data[0])}
-          running={isTaskStarted(data[0])}
+          isRunning={isTaskStarted(data[0])}
           canSubmit={{ ...canSubmit, overDeadline }}
           onStart={onTimerStart}
           onEnd={() => {
