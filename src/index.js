@@ -12,11 +12,18 @@ import Swal from 'sweetalert2'
 const getNumberOfTestsFromFile = (base64File) =>
   JSON.parse(Buffer.from(base64File, 'base64').toString('ascii')).length
 
+function getTimeLimit(data) {
+  return data.startTime ? new Date(data.startTime).getTime() + data.timeLimit * 60 * 1000 - new Date() : data.timeLimit * 60 * 1000;
+}
+
+const isTaskStarted = (data) => !!data.startTime
+
 export const CodeEditor = ({
   outerMonacoWrapperStyle,
   fetchTasks,
   codeCheckerBaseLink,
   solverId,
+  taskStartedCallback,
   outerOnSubmit,
   absoluteOffset,
   sharingCodeFunctions
@@ -52,6 +59,8 @@ export const CodeEditor = ({
     sharingCodeFunctions?.pub(
       JSON.stringify({ id: sharingCodeFunctions?.id, message: 'start' })
     )
+    if (taskStartedCallback && !isTaskStarted(task)) taskStartedCallback()
+
     setCanSubmit({ ...canSubmit, beforeStart: false })
   }
 
@@ -61,9 +70,15 @@ export const CodeEditor = ({
     const overDeadline = false
     fetchTasks().then((data) => {
       setTask(data[0])
+      if (isTaskStarted(data[0]) && data[0]) {
+        const currentCode = Buffer.from(data[0].code || '', 'base64').toString()
+        setCode(currentCode)
+        onTimerStart()
+      }
       setTimerView(
         <Timers
-          timeLimit={data[0].timeLimit}
+          timeLimit={getTimeLimit(data[0])}
+          isRunning={isTaskStarted(data[0])}
           canSubmit={{ ...canSubmit, overDeadline }}
           onStart={onTimerStart}
           onEnd={() => {
@@ -104,7 +119,6 @@ export const CodeEditor = ({
   }
 
   const safeSubmit = (code) => {
-    console.log(code)
     setTests({ ...tests, state: 'Pending' })
     submit(
       codeCheckerBaseLink,
