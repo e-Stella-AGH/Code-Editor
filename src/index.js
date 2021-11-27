@@ -7,7 +7,6 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import { submit } from './utils'
 import { Timers } from './Timers'
 import { TestsResults } from './TestsResults'
-import Swal from 'sweetalert2'
 
 const getNumberOfTestsFromFile = (base64File) =>
   JSON.parse(Buffer.from(base64File, 'base64').toString('ascii')).length
@@ -36,7 +35,6 @@ export const CodeEditor = ({
   const [theme, setTheme] = useState('vs-dark')
   const [open, setOpen] = useState(false)
   const [task, setTask] = useState(null)
-  const [timerView, setTimerView] = useState(null)
   const [canSubmit, setCanSubmit] = useState({
     beforeStart: true,
     ability: true,
@@ -67,7 +65,6 @@ export const CodeEditor = ({
   const startButtonRef = useRef(null)
 
   useEffect(() => {
-    const overDeadline = false
     fetchTasks().then((data) => {
       setTask(data[0])
       if (isTaskStarted(data[0]) && data[0]) {
@@ -75,18 +72,6 @@ export const CodeEditor = ({
         setCode(currentCode)
         onTimerStart()
       }
-      setTimerView(
-        <Timers
-          timeLimit={getTimeLimit(data[0])}
-          isRunning={isTaskStarted(data[0])}
-          canSubmit={{ ...canSubmit, overDeadline }}
-          onStart={onTimerStart}
-          onEnd={() => {
-            setCanSubmit({ ...canSubmit, ability: false })
-          }}
-          startButtonRef={startButtonRef}
-        />
-      )
       setTests({
         ...tests,
         testResults: new Array(getNumberOfTestsFromFile(data[0].testsBase64))
@@ -160,28 +145,48 @@ export const CodeEditor = ({
           top: `${1 + absoluteOffset.settings.top}em`
         }}
       >
-        <IconButton onClick={() => setOpen(true)}>
+        <IconButton disabled={!task} onClick={() => setOpen(true)}>
           <SettingsIcon color='primary' fontSize='large' />
         </IconButton>
       </div>
-      <div style={{ marginTop: '2em' }}>{timerView}</div>
-      <div style={{ marginTop: '2em', marginBottom: '1em' }}>
-        <TestsResults testResults={tests.testResults} state={tests.state} shouldShowCompilationError={areTestsDisplayedFirstTime} setShouldShowCompilationError={setAreTestsDisplayedFirstTime} />
+      <div style={{ marginTop: '2em' }}>
+        {task && (
+          <Timers
+            timeLimit={getTimeLimit(task)}
+            isRunning={isTaskStarted(task)}
+            canSubmit={{ ...canSubmit, overDeadline: false }}
+            onStart={onTimerStart}
+            onEnd={() => {
+              setCanSubmit({ ...canSubmit, ability: false })
+            }}
+            startButtonRef={startButtonRef}
+          />
+        )}
       </div>
-      <Drawer
-        anchor='right'
-        open={open}
-        transitionDuration={700}
-        ModalProps={{ onBackdropClick: () => setOpen(false) }}
-      >
-        <OptionsDrawer
-          language={language}
-          setLanguage={setLanguage}
-          setTheme={setTheme}
-          task={task}
-          theme={theme}
+      <div style={{ marginTop: '2em', marginBottom: '1em' }}>
+        <TestsResults
+          testResults={tests.testResults}
+          state={tests.state}
+          shouldShowCompilationError={areTestsDisplayedFirstTime}
+          setShouldShowCompilationError={setAreTestsDisplayedFirstTime}
         />
-      </Drawer>
+      </div>
+      {task && (
+        <Drawer
+          anchor='right'
+          open={open}
+          transitionDuration={700}
+          ModalProps={{ onBackdropClick: () => setOpen(false) }}
+        >
+          <OptionsDrawer
+            language={language}
+            setLanguage={setLanguage}
+            setTheme={setTheme}
+            task={task}
+            theme={theme}
+          />
+        </Drawer>
+      )}
     </div>
   )
 }
