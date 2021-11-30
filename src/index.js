@@ -53,11 +53,11 @@ export const CodeEditor = ({
     setAreTestsDisplayedFirstTime(false)
   }
 
-  const onTimerStart = () => {
+  const onTimerStart = (innerTask) => {
     sharingCodeFunctions?.pub(
       JSON.stringify({ id: sharingCodeFunctions?.id, message: 'start' })
     )
-    if (taskStartedCallback && !isTaskStarted(task)) taskStartedCallback()
+    if (taskStartedCallback && !isTaskStarted(innerTask)) taskStartedCallback()
 
     setCanSubmit({ ...canSubmit, beforeStart: false })
   }
@@ -67,10 +67,10 @@ export const CodeEditor = ({
   useEffect(() => {
     fetchTasks().then((data) => {
       setTask(data[0])
-      if (isTaskStarted(data[0]) && data[0]) {
+      if (data[0] && isTaskStarted(data[0])) {
         const currentCode = Buffer.from(data[0].code || '', 'base64').toString()
         setCode(currentCode)
-        onTimerStart()
+        onTimerStart(data[0])
       }
       setTests({
         ...tests,
@@ -155,7 +155,7 @@ export const CodeEditor = ({
             timeLimit={getTimeLimit(task)}
             isRunning={isTaskStarted(task)}
             canSubmit={{ ...canSubmit, overDeadline: false }}
-            onStart={onTimerStart}
+            onStart={() => onTimerStart(task)}
             onEnd={() => {
               setCanSubmit({ ...canSubmit, ability: false })
             }}
